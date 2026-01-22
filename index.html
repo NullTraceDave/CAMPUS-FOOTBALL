@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Campus Match Prediction Contest</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      --primary: #0f5132;
+      --secondary: #198754;
+      --bg: #f8f9fa;
+      --danger: #dc3545;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: #212529;
+    }
+
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 1.2rem;
+      text-align: center;
+    }
+
+    main {
+      max-width: 650px;
+      margin: auto;
+      padding: 1.2rem;
+    }
+
+    .card {
+      background: white;
+      padding: 1.2rem;
+      border-radius: 10px;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      margin-top: 0.8rem;
+      font-weight: 600;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 0.65rem;
+      margin-top: 0.3rem;
+      border-radius: 6px;
+      border: 1px solid #ced4da;
+      font-size: 1rem;
+    }
+
+    button {
+      background: var(--secondary);
+      color: white;
+      border: none;
+      margin-top: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:disabled {
+      background: #adb5bd;
+      cursor: not-allowed;
+    }
+
+    .countdown {
+      font-weight: bold;
+      color: var(--danger);
+      text-align: center;
+      font-size: 1.1rem;
+    }
+
+    .disclaimer {
+      font-size: 0.85rem;
+      color: #6c757d;
+      margin-top: 1rem;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.85rem;
+      padding: 1rem;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>⚽ Departmental Match Prediction</h1>
+  <p>Predict • Compete • Win Prizes</p>
+</header>
+
+<main>
+
+  <!-- MATCH INFO -->
+  <div class="card">
+    <h2>Match Details</h2>
+    <p><strong>Department A</strong> vs <strong>Department B</strong></p>
+    <p>Kickoff: <strong>Today, 5:00 PM</strong></p>
+    <p class="countdown" id="countdown"></p>
+  </div>
+
+  <!-- PREDICTION FORM -->
+  <div class="card">
+    <h2>Submit Your Prediction</h2>
+
+    <form id="predictionForm">
+
+      <label>Full Name</label>
+      <input type="text" id="name" required />
+
+      <label>Phone Number</label>
+      <input type="tel" id="phone" required />
+
+      <label>Your Department</label>
+      <input type="text" id="department" required />
+
+      <label>Prediction</label>
+      <select id="prediction" required>
+        <option value="">-- Choose --</option>
+        <option>Department A Wins</option>
+        <option>Department B Wins</option>
+        <option>Draw</option>
+      </select>
+
+      <label>Entry Fee (Participation)</label>
+      <select id="amount" required>
+        <option value="">-- Select Amount --</option>
+        <option value="500">₦500</option>
+        <option value="1000">₦1,000</option>
+        <option value="2000">₦2,000</option>
+      </select>
+
+      <button type="submit" id="submitBtn">Submit Prediction</button>
+
+    </form>
+
+    <p class="disclaimer">
+      This is a prediction contest for entertainment purposes only.  
+      No betting or gambling is involved. Entry fees are participation fees.  
+      Winners are rewarded manually.
+    </p>
+  </div>
+
+</main>
+
+<footer>
+  © 2026 Prediction Contest • Not a betting platform
+</footer>
+
+<script>
+  /* ===========================
+     CONFIGURATION
+  ============================ */
+
+  // 🔒 Prediction deadline (change this)
+  const DEADLINE = new Date();
+  DEADLINE.setHours(16, 30, 0, 0); // 4:30 PM today
+
+  // 💳 External payment link (Paystack / Flutterwave)
+  const PAYMENT_LINK = "https://example.com/payment-link";
+
+  /* ===========================
+     COUNTDOWN TIMER
+  ============================ */
+  const countdownEl = document.getElementById("countdown");
+  const submitBtn = document.getElementById("submitBtn");
+
+  function updateCountdown() {
+    const now = new Date();
+    const diff = DEADLINE - now;
+
+    if (diff <= 0) {
+      countdownEl.textContent = "Predictions closed";
+      submitBtn.disabled = true;
+      return;
+    }
+
+    const mins = Math.floor(diff / 60000);
+    const secs = Math.floor((diff % 60000) / 1000);
+    countdownEl.textContent = `Closes in ${mins}m ${secs}s`;
+  }
+
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
+
+  /* ===========================
+     FORM HANDLING
+  ============================ */
+  document.getElementById("predictionForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    if (new Date() > DEADLINE) {
+      alert("Prediction window has closed.");
+      return;
+    }
+
+    const entry = {
+      name: name.value,
+      phone: phone.value,
+      department: department.value,
+      prediction: prediction.value,
+      amount: amount.value,
+      time: new Date().toISOString()
+    };
+
+    // Save locally
+    const entries = JSON.parse(localStorage.getItem("predictions") || "[]");
+    entries.push(entry);
+    localStorage.setItem("predictions", JSON.stringify(entries));
+
+    alert("Prediction submitted! You will now be redirected to payment.");
+
+    // Redirect to payment (external)
+    window.location.href = PAYMENT_LINK;
+  });
+</script>
+
+</body>
+</html>
