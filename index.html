@@ -171,6 +171,7 @@
 
   // 🔒 Prediction deadline (change this)
   const DEADLINE = new Date();
+  DEADLINE.setDate(DEADLINE.getDate() + 1); // move to tomorrow
   DEADLINE.setHours(14, 30, 0, 0); // 2:30 PM today
 
   // 💳 External payment link (Paystack / Flutterwave)
