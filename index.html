@@ -37,13 +37,12 @@ button{
   background:linear-gradient(135deg,#16a34a,#22c55e);
   color:white;font-size:1rem;font-weight:700;cursor:pointer
 }
-button.danger{background:#dc2626}
 button.secondary{background:#0f766e}
-.countdown{text-align:center;color:var(--danger);font-weight:700}
-.match-box{padding:.7rem;border-bottom:1px solid #e5e7eb}
-small{color:#64748b}
-footer{text-align:center;font-size:.8rem;color:#64748b;padding:1rem}
+button.danger{background:#dc2626}
 .hidden{display:none}
+.match-box{border-bottom:1px solid #e5e7eb;padding:.7rem}
+.admin-tools{margin-top:.5rem}
+footer{text-align:center;font-size:.8rem;color:#64748b;padding:1rem}
 </style>
 </head>
 
@@ -57,7 +56,7 @@ footer{text-align:center;font-size:.8rem;color:#64748b;padding:1rem}
 
 <main>
 
-<!-- MATCH LIST -->
+<!-- MATCHES -->
 <div class="card">
   <h2>Available Matches</h2>
   <div id="matchList"></div>
@@ -66,6 +65,7 @@ footer{text-align:center;font-size:.8rem;color:#64748b;padding:1rem}
 <!-- PREDICTION FORM -->
 <div class="card">
   <h2>Submit Prediction</h2>
+
   <form id="predictForm">
     <label>Select Match</label>
     <select id="matchId" required></select>
@@ -75,9 +75,6 @@ footer{text-align:center;font-size:.8rem;color:#64748b;padding:1rem}
 
     <label>Phone Number</label>
     <input id="phone" required>
-
-    <label>Department</label>
-    <input id="department" required>
 
     <label>Prediction</label>
     <select id="prediction" required>
@@ -93,8 +90,16 @@ footer{text-align:center;font-size:.8rem;color:#64748b;padding:1rem}
       <option value="2000">₦2000</option>
     </select>
 
-    <button>Submit Prediction</button>
+    <button type="submit">Submit Prediction</button>
   </form>
+
+  <!-- PAYMENT SECTION -->
+  <div id="paymentBox" class="hidden">
+    <hr>
+    <h3>✅ Prediction Saved</h3>
+    <p>Please complete your participation payment.</p>
+    <button onclick="payNow()">💳 Pay Now</button>
+  </div>
 </div>
 
 <!-- ADMIN -->
@@ -106,27 +111,10 @@ footer{text-align:center;font-size:.8rem;color:#64748b;padding:1rem}
   <div id="adminArea" class="hidden">
     <label>Team A</label><input id="teamA">
     <label>Team B</label><input id="teamB">
-    <label>Kickoff Time</label><input type="datetime-local" id="kickoff">
+    <label>Kickoff</label><input type="datetime-local" id="kickoff">
     <label>Prediction Deadline</label><input type="datetime-local" id="deadline">
     <button onclick="addMatch()">Add Match</button>
   </div>
-</div>
-
-<!-- LEADERBOARD -->
-<div class="card">
-  <h2>🏆 Leaderboard</h2>
-  <div id="leaderboard"></div>
-</div>
-
-<!-- STATS -->
-<div class="card">
-  <h2>📊 Statistics</h2>
-  <div id="stats"></div>
-</div>
-
-<!-- SHARE -->
-<div class="card">
-  <button onclick="share()">📱 Share on WhatsApp</button>
 </div>
 
 </main>
@@ -136,60 +124,112 @@ footer{text-align:center;font-size:.8rem;color:#64748b;padding:1rem}
 </footer>
 
 <script>
-const ADMIN_PIN="1234"; // change this
-let matches=JSON.parse(localStorage.getItem("matches")||"[]");
-let predictions=JSON.parse(localStorage.getItem("predictions")||"[]");
+const ADMIN_PIN = "1234"; // CHANGE THIS
+const PAYMENT_LINK = "https://example.com/payment-link"; // CHANGE THIS
 
-function save(){localStorage.setItem("matches",JSON.stringify(matches));
-localStorage.setItem("predictions",JSON.stringify(predictions));}
+let adminUnlocked = false;
+let matches = JSON.parse(localStorage.getItem("matches") || "[]");
+let predictions = JSON.parse(localStorage.getItem("predictions") || "[]");
+
+function save(){
+  localStorage.setItem("matches", JSON.stringify(matches));
+  localStorage.setItem("predictions", JSON.stringify(predictions));
+}
 
 function unlockAdmin(){
- if(adminPin.value===ADMIN_PIN)
-  adminArea.classList.remove("hidden");
- else alert("Wrong PIN");
+  if(adminPin.value === ADMIN_PIN){
+    adminUnlocked = true;
+    adminArea.classList.remove("hidden");
+    render();
+  } else alert("Wrong PIN");
 }
 
 function addMatch(){
- matches.push({
-  id:Date.now(),
-  a:teamA.value,
-  b:teamB.value,
-  kickoff:new Date(kickoff.value),
-  deadline:new Date(deadline.value)
- });
- save();render();
+  matches.push({
+    id: Date.now(),
+    a: teamA.value,
+    b: teamB.value,
+    kickoff: kickoff.value,
+    deadline: deadline.value,
+    completed: false
+  });
+  save(); render();
+}
+
+function deleteMatch(id){
+  if(!confirm("Delete this match?")) return;
+  matches = matches.filter(m => m.id !== id);
+  predictions = predictions.filter(p => p.match !== id);
+  save(); render();
+}
+
+function submitScore(id){
+  const aScore = document.getElementById(`sa-${id}`).value;
+  const bScore = document.getElementById(`sb-${id}`).value;
+  if(aScore === "" || bScore === "") return alert("Enter scores");
+
+  const match = matches.find(m => m.id === id);
+  match.scoreA = aScore;
+  match.scoreB = bScore;
+  match.result =
+    aScore > bScore ? "Team A Wins" :
+    bScore > aScore ? "Team B Wins" : "Draw";
+  match.completed = true;
+
+  save(); render();
 }
 
 function render(){
- matchList.innerHTML="";
- matchId.innerHTML="";
- matches.forEach(m=>{
-  matchList.innerHTML+=`
-   <div class="match-box">
-    <strong>${m.a} vs ${m.b}</strong><br>
-    <small>Kickoff: ${new Date(m.kickoff).toLocaleString()}</small>
-   </div>`;
-  matchId.innerHTML+=`<option value="${m.id}">
-   ${m.a} vs ${m.b}</option>`;
- });
- stats.innerHTML=`Total Predictions: ${predictions.length}<br>
- Total Amount: ₦${predictions.reduce((a,b)=>a+Number(b.amount),0)}`;
+  matchList.innerHTML = "";
+  matchId.innerHTML = "";
+
+  matches.forEach(m => {
+    const closed = new Date() > new Date(m.deadline) || m.completed;
+
+    matchList.innerHTML += `
+      <div class="match-box">
+        <strong>${m.a} vs ${m.b}</strong><br>
+        <small>Kickoff: ${new Date(m.kickoff).toLocaleString()}</small><br>
+        ${m.completed ? `<strong>Final Score: ${m.scoreA} - ${m.scoreB}</strong>` : ""}
+        ${adminUnlocked ? `
+        <div class="admin-tools">
+          <input id="sa-${m.id}" type="number" placeholder="${m.a} score">
+          <input id="sb-${m.id}" type="number" placeholder="${m.b} score">
+          <button onclick="submitScore(${m.id})">Submit Result</button>
+          <button class="danger" onclick="deleteMatch(${m.id})">Delete Match</button>
+        </div>` : ""}
+      </div>
+    `;
+
+    if(!closed){
+      matchId.innerHTML += `<option value="${m.id}">${m.a} vs ${m.b}</option>`;
+    }
+  });
 }
 
-predictForm.onsubmit=e=>{
- e.preventDefault();
- const m=matches.find(x=>x.id==matchId.value);
- if(new Date()>new Date(m.deadline)) return alert("Predictions closed");
- predictions.push({
-  match:m.id,name:name.value,department:department.value,
-  prediction:prediction.value,amount:amount.value
- });
- save();alert("Prediction submitted!");
+predictForm.onsubmit = e => {
+  e.preventDefault();
+
+  const m = matches.find(x => x.id == matchId.value);
+  if(!m || new Date() > new Date(m.deadline) || m.completed)
+    return alert("Predictions closed");
+
+  predictions.push({
+    match: m.id,
+    name: name.value,
+    phone: phone.value,
+    prediction: prediction.value,
+    amount: amount.value,
+    paid: false
+  });
+
+  save();
+  predictForm.reset();
+  paymentBox.classList.remove("hidden");
 };
 
-function share(){
- location.href=`https://wa.me/?text=${encodeURIComponent(
- "Join FUO Campus Match Prediction: "+location.href)}`;
+function payNow(){
+  window.open(PAYMENT_LINK, "_blank");
 }
 
 render();
