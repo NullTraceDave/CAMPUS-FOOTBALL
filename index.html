@@ -7,10 +7,12 @@
 
   <style>
     :root {
-      --primary: #0f5132;
-      --secondary: #198754;
-      --bg: #f8f9fa;
-      --danger: #dc3545;
+      --primary: #14532d;
+      --secondary: #22c55e;
+      --accent: #16a34a;
+      --bg: #f1f5f9;
+      --danger: #dc2626;
+      --text-dark: #0f172a;
     }
 
     * {
@@ -20,82 +22,123 @@
 
     body {
       margin: 0;
-      background: var(--bg);
-      color: #212529;
+      background: linear-gradient(135deg, #ecfeff, #f0fdf4);
+      color: var(--text-dark);
     }
 
     header {
-      background: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
       color: white;
-      padding: 1.2rem;
+      padding: 1.5rem 1rem;
       text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.7rem;
+    }
+
+    header p {
+      margin-top: 0.4rem;
+      opacity: 0.95;
     }
 
     main {
-      max-width: 650px;
+      max-width: 720px;
       margin: auto;
       padding: 1.2rem;
     }
 
     .card {
       background: white;
-      padding: 1.2rem;
-      border-radius: 10px;
-      margin-bottom: 1.2rem;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+      padding: 1.4rem;
+      border-radius: 14px;
+      margin-bottom: 1.4rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     }
 
-    h2 {
-      margin-top: 0;
+    .match-title {
+      text-align: center;
+      font-size: 1.3rem;
+      margin-bottom: 0.6rem;
+      font-weight: 700;
     }
 
-    label {
-      display: block;
-      margin-top: 0.8rem;
-      font-weight: 600;
-    }
-
-    input, select, button {
-      width: 100%;
-      padding: 0.65rem;
-      margin-top: 0.3rem;
-      border-radius: 6px;
-      border: 1px solid #ced4da;
-      font-size: 1rem;
-    }
-
-    button {
-      background: var(--secondary);
-      color: white;
-      border: none;
-      margin-top: 1rem;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    button:disabled {
-      background: #adb5bd;
-      cursor: not-allowed;
+    .kickoff {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #475569;
     }
 
     .countdown {
+      margin-top: 0.8rem;
       font-weight: bold;
       color: var(--danger);
       text-align: center;
       font-size: 1.1rem;
     }
 
-    .disclaimer {
-      font-size: 0.85rem;
-      color: #6c757d;
+    label {
+      display: block;
       margin-top: 1rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.7rem;
+      margin-top: 0.4rem;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 1rem;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    button {
+      width: 100%;
+      background: linear-gradient(135deg, var(--secondary), var(--accent));
+      color: white;
+      border: none;
+      margin-top: 1.4rem;
+      padding: 0.9rem;
+      border-radius: 10px;
+      font-size: 1.05rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    button:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .disclaimer {
+      font-size: 0.82rem;
+      color: #64748b;
+      margin-top: 1.2rem;
+      text-align: center;
+      line-height: 1.4;
     }
 
     footer {
       text-align: center;
-      font-size: 0.85rem;
-      padding: 1rem;
-      color: #6c757d;
+      font-size: 0.8rem;
+      padding: 1.2rem;
+      color: #64748b;
     }
   </style>
 </head>
@@ -110,10 +153,9 @@
 
   <!-- MATCH INFO -->
   <div class="card">
-    <h2>Match Details</h2>
-    <p><strong>Department A</strong> vs <strong>Department B</strong></p>
-    <p>Kickoff: <strong>Today, 5:00 PM</strong></p>
-    <p class="countdown" id="countdown"></p>
+    <div class="match-title">Department A vs Department B</div>
+    <div class="kickoff">Kickoff: Tomorrow, 5:00 PM</div>
+    <div class="countdown" id="countdown"></div>
   </div>
 
   <!-- PREDICTION FORM -->
@@ -148,7 +190,6 @@
       </select>
 
       <button type="submit" id="submitBtn">Submit Prediction</button>
-
     </form>
 
     <p class="disclaimer">
@@ -169,12 +210,11 @@
      CONFIGURATION
   ============================ */
 
-  // 🔒 Prediction deadline (change this)
+  // Prediction deadline: TOMORROW at 5:00 PM
   const DEADLINE = new Date();
-  DEADLINE.setDate(DEADLINE.getDate() + 1); // move to tomorrow
-  DEADLINE.setHours(14, 30, 0, 0); // 2:30 PM today
+  DEADLINE.setDate(DEADLINE.getDate() + 1); // tomorrow
+  DEADLINE.setHours(17, 0, 0, 0);           // 5:00 PM
 
-  // 💳 External payment link (Paystack / Flutterwave)
   const PAYMENT_LINK = "https://example.com/payment-link";
 
   /* ===========================
@@ -193,9 +233,11 @@
       return;
     }
 
-    const mins = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / 60000);
     const secs = Math.floor((diff % 60000) / 1000);
-    countdownEl.textContent = `Closes in ${mins}m ${secs}s`;
+
+    countdownEl.textContent = `Closes in ${hours}h ${mins}m ${secs}s`;
   }
 
   setInterval(updateCountdown, 1000);
@@ -221,14 +263,11 @@
       time: new Date().toISOString()
     };
 
-    // Save locally
     const entries = JSON.parse(localStorage.getItem("predictions") || "[]");
     entries.push(entry);
     localStorage.setItem("predictions", JSON.stringify(entries));
 
-    alert("Prediction submitted! You will now be redirected to payment.");
-
-    // Redirect to payment (external)
+    alert("Prediction submitted! Redirecting to payment...");
     window.location.href = PAYMENT_LINK;
   });
 </script>
