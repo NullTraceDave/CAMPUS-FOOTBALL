@@ -7,39 +7,39 @@
 
 <style>
 :root{
- --green:#065f46;
- --accent:#22c55e;
- --bg:#ecfeff;
- --danger:#dc2626;
+  --green:#065f46;
+  --accent:#22c55e;
+  --danger:#dc2626;
 }
 *{box-sizing:border-box;font-family:system-ui}
 body{margin:0;background:linear-gradient(135deg,#ecfeff,#f0fdf4)}
 header{
- background:linear-gradient(135deg,#064e3b,#16a34a);
- color:white;text-align:center;padding:1.8rem
+  background:linear-gradient(135deg,#064e3b,#16a34a);
+  color:white;text-align:center;padding:1.8rem
 }
+header h1{margin:0;font-size:1.9rem}
 main{max-width:1000px;margin:auto;padding:1.2rem}
 .card{
- background:white;border-radius:16px;
- padding:1.4rem;margin-bottom:1.4rem;
- box-shadow:0 15px 35px rgba(0,0,0,.08)
+  background:white;border-radius:16px;
+  padding:1.4rem;margin-bottom:1.4rem;
+  box-shadow:0 15px 35px rgba(0,0,0,.08)
 }
 label{display:block;margin-top:1rem;font-weight:600}
 input,select{
- width:100%;padding:.7rem;margin-top:.4rem;
- border-radius:10px;border:1px solid #cbd5e1
+  width:100%;padding:.7rem;margin-top:.4rem;
+  border-radius:10px;border:1px solid #cbd5e1
 }
 button{
- margin-top:1rem;width:100%;
- padding:.85rem;border:none;border-radius:14px;
- background:linear-gradient(135deg,#16a34a,#22c55e);
- color:white;font-size:1rem;font-weight:700;cursor:pointer
+  margin-top:1rem;width:100%;
+  padding:.85rem;border:none;border-radius:14px;
+  background:linear-gradient(135deg,#16a34a,#22c55e);
+  color:white;font-weight:700;cursor:pointer
 }
 button.secondary{background:#0f766e}
 button.danger{background:#dc2626}
-.hidden{display:none}
 .match-box{border-bottom:1px solid #e5e7eb;padding:.7rem}
 .slip-item{padding:.6rem;border-bottom:1px dashed #e5e7eb}
+.hidden{display:none}
 footer{text-align:center;font-size:.8rem;color:#64748b;padding:1rem}
 </style>
 </head>
@@ -47,73 +47,74 @@ footer{text-align:center;font-size:.8rem;color:#64748b;padding:1rem}
 <body>
 
 <header>
- <h1>⚽ Campus Match Prediction</h1>
- <p>Federal University Otuoke, Bayelsa State</p>
+  <h1>⚽ FUO Campus Match Prediction</h1>
+  <p>Federal University Otuoke</p>
 </header>
 
 <main>
 
 <div class="card">
- <h2>Available Matches</h2>
- <div id="matchList"></div>
+  <h2>Available Matches</h2>
+  <div id="matchList"></div>
 </div>
 
 <div class="card">
- <h2>Prediction Slip</h2>
+  <h2>Prediction Slip</h2>
 
- <label>Select Match</label>
- <select id="matchSelect"></select>
+  <label>Select Match</label>
+  <select id="matchSelect"></select>
 
- <label>Prediction</label>
- <select id="predictionSelect">
-  <option>Team A Wins</option>
-  <option>Team B Wins</option>
-  <option>Draw</option>
- </select>
+  <label>Prediction</label>
+  <select id="predictionSelect">
+    <option>Team A Wins</option>
+    <option>Team B Wins</option>
+    <option>Draw</option>
+  </select>
 
- <button onclick="addToSlip()">Add To Slip</button>
+  <button onclick="addToSlip()">Add To Slip</button>
+  <div id="slip"></div>
 
- <div id="slip"></div>
+  <label>Full Name</label>
+  <input id="name">
 
- <label>Full Name</label>
- <input id="name">
+  <label>Phone Number</label>
+  <input id="phone">
 
- <label>Phone Number</label>
- <input id="phone">
+  <label>Entry Fee</label>
+  <select id="amount">
+    <option value="500">₦500</option>
+    <option value="1000">₦1000</option>
+    <option value="2000">₦2000</option>
+  </select>
 
- <label>Entry Fee</label>
- <select id="amount">
-  <option value="500">₦500</option>
-  <option value="1000">₦1000</option>
-  <option value="2000">₦2000</option>
- </select>
-
- <button onclick="submitBooking()">Generate Booking Code & Pay</button>
+  <button onclick="submitBooking()">Generate Booking Code & Pay</button>
 </div>
 
 <div class="card">
- <h2>Load Booking Code</h2>
- <input id="loadCode">
- <button class="secondary" onclick="loadBooking()">Load Slip</button>
+  <h2>Load Booking</h2>
+  <input id="loadCode" placeholder="Enter booking code">
+  <button class="secondary" onclick="loadBooking()">Load Slip</button>
 </div>
 
 <div class="card">
- <h2>Admin Panel</h2>
- <input id="adminPin" placeholder="Admin PIN">
- <button class="secondary" onclick="unlockAdmin()">Unlock</button>
+  <h2>Admin Panel</h2>
+  <input id="adminPin" placeholder="Admin PIN">
+  <button class="secondary" onclick="unlockAdmin()">Unlock</button>
 
- <div id="adminArea" class="hidden">
-  <label>Team A</label><input id="teamA">
-  <label>Team B</label><input id="teamB">
-  <label>Kickoff</label><input type="datetime-local" id="kickoff">
-  <label>Deadline</label><input type="datetime-local" id="deadline">
-  <button onclick="addMatch()">Add Match</button>
- </div>
+  <div id="adminArea" class="hidden">
+    <label>Team A</label><input id="teamA">
+    <label>Team B</label><input id="teamB">
+    <label>Kickoff</label><input type="datetime-local" id="kickoff">
+    <label>Deadline</label><input type="datetime-local" id="deadline">
+    <button onclick="addMatch()">Add Match</button>
+  </div>
 </div>
 
 </main>
 
-<footer>© 2026 FUO Campus Prediction</footer>
+<footer>
+© 2026 FUO Campus Prediction • Not a betting platform
+</footer>
 
 <!-- FIREBASE SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -121,27 +122,26 @@ footer{text-align:center;font-size:.8rem;color:#64748b;padding:1rem}
 
 <script>
 /* ================= CONFIG ================= */
-const ADMIN_PIN = "1234";
-const PAYMENT_LINK = "https://example.com/pay";
-const FORM_SPREE_URL = "https://formspree.io/f/xykeeyea";
+const ADMIN_PIN="1234";
+const PAYMENT_LINK="https://example.com/pay";
+const FORM_ENDPOINT="https://formspree.io/f/xykeeyea";
 
 /* ================= FIREBASE ================= */
 const firebaseConfig = {
- apiKey: "AIzaSyB5BB-snK8QEfFN0FiZPv7nNoTN10oC-jc",
- authDomain: "fuo-campus-prediction.firebaseapp.com",
- projectId: "fuo-campus-prediction",
- storageBucket: "fuo-campus-prediction.firebasestorage.app",
- messagingSenderId: "460045178660",
- appId: "1:460045178660:web:5e305e4170a779f25105b1"
+  apiKey: "AIzaSyB5BB-snK8QEfFN0FiZPv7nNoTN10oC-jc",
+  authDomain: "fuo-campus-prediction.firebaseapp.com",
+  projectId: "fuo-campus-prediction",
+  storageBucket: "fuo-campus-prediction.firebasestorage.app",
+  messagingSenderId: "460045178660",
+  appId: "1:460045178660:web:5e305e4170a779f25105b1"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* ================= GLOBALS ================= */
-let adminUnlocked=false;
-let matches=[];
+/* ================= STATE ================= */
 let slip=[];
+let adminUnlocked=false;
 
 /* ================= UTIL ================= */
 function bookingCode(){
@@ -158,31 +158,32 @@ function unlockAdmin(){
 
 function addMatch(){
  db.collection("matches").add({
-  a:teamA.value,
-  b:teamB.value,
+  teamA:teamA.value,
+  teamB:teamB.value,
   kickoff:kickoff.value,
   deadline:deadline.value,
-  completed:false,
-  createdAt:new Date()
+  createdAt:firebase.firestore.FieldValue.serverTimestamp()
  });
 }
 
-/* ================= MATCH LOAD ================= */
+/* ================= LOAD MATCHES ================= */
 db.collection("matches").orderBy("kickoff")
-.onSnapshot(snap=>{
+.onSnapshot(snapshot=>{
  matchList.innerHTML="";
  matchSelect.innerHTML="";
- matches=[];
- snap.forEach(doc=>{
+ snapshot.forEach(doc=>{
   const m={id:doc.id,...doc.data()};
-  matches.push(m);
+  const closed=new Date()>new Date(m.deadline);
+
   matchList.innerHTML+=`
    <div class="match-box">
-    <strong>${m.a} vs ${m.b}</strong><br>
-    <small>${new Date(m.kickoff).toLocaleString()}</small>
+    <strong>${m.teamA} vs ${m.teamB}</strong><br>
+    <small>Kickoff: ${new Date(m.kickoff).toLocaleString()}</small>
    </div>`;
-  if(new Date()<new Date(m.deadline))
-   matchSelect.innerHTML+=`<option value="${m.id}">${m.a} vs ${m.b}</option>`;
+
+  if(!closed)
+   matchSelect.innerHTML+=`
+    <option value="${m.id}">${m.teamA} vs ${m.teamB}</option>`;
  });
 });
 
@@ -193,60 +194,53 @@ function addToSlip(){
  slip.push({matchId:id,prediction:predictionSelect.value});
  renderSlip();
 }
-function removeSlip(i){
- slip.splice(i,1);renderSlip();
-}
-function renderSlip(){
- slip.innerHTML="";
- const box=document.getElementById("slip");
- box.innerHTML="";
- slip.forEach((s,i)=>{
-  const m=matches.find(x=>x.id===s.matchId);
-  box.innerHTML+=`
-   <div class="slip-item">
-    ${m.a} vs ${m.b} → <b>${s.prediction}</b>
-    <button class="danger" onclick="removeSlip(${i})">Remove</button>
-   </div>`;
- });
-}
 
-/* ================= FORM SPREE ================= */
-function sendToForm(data){
- fetch(FORM_SPREE_URL,{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify(data)
+function renderSlip(){
+ slipBox=slipBox||document.getElementById("slip");
+ slipBox.innerHTML="";
+ slip.forEach((s,i)=>{
+  slipBox.innerHTML+=`
+   <div class="slip-item">
+    ${s.matchId} → <strong>${s.prediction}</strong>
+    <button class="danger" onclick="slip.splice(${i},1);renderSlip()">Remove</button>
+   </div>`;
  });
 }
 
 /* ================= BOOKING ================= */
 function submitBooking(){
- if(slip.length===0) return alert("No prediction");
+ if(slip.length===0) return alert("No predictions selected");
+
  const code=bookingCode();
  const data={
-  code,
+  booking_code:code,
   name:name.value,
   phone:phone.value,
   amount:amount.value,
   predictions:slip,
-  time:new Date()
+  time:new Date().toISOString()
  };
- db.collection("bookings").doc(code).set(data);
- sendToForm(data);
- alert("Booking Code: "+code);
- window.location.href=PAYMENT_LINK;
+
+ db.collection("bookings").doc(code).set(data).then(()=>{
+  fetch(FORM_ENDPOINT,{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify(data)
+  });
+  alert("Booking Code: "+code);
+  window.location.href=PAYMENT_LINK;
+ });
 }
 
 function loadBooking(){
  const code=loadCode.value;
- db.collection("bookings").doc(code).get()
- .then(d=>{
-  if(!d.exists) return alert("Not found");
-  slip=d.data().predictions;
+ db.collection("bookings").doc(code).get().then(doc=>{
+  if(!doc.exists) return alert("Booking not found");
+  slip=doc.data().predictions;
   renderSlip();
  });
 }
 </script>
 
 </body>
-                          </html>
+   </html>
