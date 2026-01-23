@@ -122,9 +122,9 @@ footer{text-align:center;font-size:.8rem;color:#64748b;padding:1rem}
 
 <script>
 /* ================= CONFIG ================= */
-const ADMIN_PIN="1234";
-const PAYMENT_LINK="https://example.com/pay";
-const FORM_ENDPOINT="https://formspree.io/f/xykeeyea";
+const ADMIN_PIN = "1234";
+const PAYMENT_LINK = "https://example.com/pay";
+const FORM_ENDPOINT = "https://formspree.io/f/xykeeyea";
 
 /* ================= FIREBASE ================= */
 const firebaseConfig = {
@@ -140,29 +140,29 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 /* ================= STATE ================= */
-let slip=[];
-let adminUnlocked=false;
+let slip = [];
+let adminUnlocked = false;
 
 /* ================= UTIL ================= */
 function bookingCode(){
- return "CP-"+Math.floor(100000+Math.random()*900000);
+ return "CP-" + Math.floor(100000 + Math.random()*900000);
 }
 
 /* ================= ADMIN ================= */
 function unlockAdmin(){
- if(adminPin.value===ADMIN_PIN){
-  adminUnlocked=true;
+ if(adminPin.value === ADMIN_PIN){
+  adminUnlocked = true;
   adminArea.classList.remove("hidden");
  } else alert("Wrong PIN");
 }
 
 function addMatch(){
  db.collection("matches").add({
-  teamA:teamA.value,
-  teamB:teamB.value,
-  kickoff:kickoff.value,
-  deadline:deadline.value,
-  createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  teamA: teamA.value,
+  teamB: teamB.value,
+  kickoff: kickoff.value,
+  deadline: deadline.value,
+  createdAt: firebase.firestore.FieldValue.serverTimestamp()
  });
 }
 
@@ -171,76 +171,94 @@ db.collection("matches").orderBy("kickoff")
 .onSnapshot(snapshot=>{
  matchList.innerHTML="";
  matchSelect.innerHTML="";
- snapshot.forEach(doc=>{
-  const m={id:doc.id,...doc.data()};
-  const closed=new Date()>new Date(m.deadline);
 
-  matchList.innerHTML+=`
+ snapshot.forEach(doc=>{
+  const m = { id: doc.id, ...doc.data() };
+  const closed = new Date() > new Date(m.deadline);
+
+  matchList.innerHTML += `
    <div class="match-box">
     <strong>${m.teamA} vs ${m.teamB}</strong><br>
     <small>Kickoff: ${new Date(m.kickoff).toLocaleString()}</small>
    </div>`;
 
-  if(!closed)
-   matchSelect.innerHTML+=`
+  if(!closed){
+   matchSelect.innerHTML += `
     <option value="${m.id}">${m.teamA} vs ${m.teamB}</option>`;
+  }
  });
 });
 
 /* ================= SLIP ================= */
 function addToSlip(){
- const id=matchSelect.value;
- if(slip.some(s=>s.matchId===id)) return alert("Already added");
- slip.push({matchId:id,prediction:predictionSelect.value});
+ const id = matchSelect.value;
+ if(!id) return alert("No match available");
+ if(slip.some(s=>s.matchId === id)) return alert("Already added");
+
+ slip.push({ matchId: id, prediction: predictionSelect.value });
  renderSlip();
 }
 
 function renderSlip(){
- slipBox=slipBox||document.getElementById("slip");
- slipBox.innerHTML="";
+ const box = document.getElementById("slip");
+ box.innerHTML = "";
+
  slip.forEach((s,i)=>{
-  slipBox.innerHTML+=`
+  box.innerHTML += `
    <div class="slip-item">
     ${s.matchId} → <strong>${s.prediction}</strong>
-    <button class="danger" onclick="slip.splice(${i},1);renderSlip()">Remove</button>
+    <button class="danger" onclick="removeSlip(${i})">Remove</button>
    </div>`;
  });
 }
 
+function removeSlip(i){
+ slip.splice(i,1);
+ renderSlip();
+}
+
 /* ================= BOOKING ================= */
 function submitBooking(){
- if(slip.length===0) return alert("No predictions selected");
+ if(slip.length === 0) return alert("Add at least one prediction");
+ if(!name.value || !phone.value) return alert("Enter name and phone");
 
- const code=bookingCode();
- const data={
-  booking_code:code,
-  name:name.value,
-  phone:phone.value,
-  amount:amount.value,
-  predictions:slip,
-  time:new Date().toISOString()
+ const code = bookingCode();
+
+ const data = {
+  booking_code: code,
+  name: name.value,
+  phone: phone.value,
+  amount: amount.value,
+  predictions: slip,
+  time: new Date().toISOString()
  };
 
- db.collection("bookings").doc(code).set(data).then(()=>{
+ db.collection("bookings").doc(code).set(data)
+ .then(()=>{
   fetch(FORM_ENDPOINT,{
    method:"POST",
-   headers:{"Content-Type":"application/json"},
-   body:JSON.stringify(data)
+   headers:{ "Content-Type":"application/json" },
+   body: JSON.stringify(data)
   });
-  alert("Booking Code: "+code);
-  window.location.href=PAYMENT_LINK;
+  alert("Booking Code: " + code);
+  window.location.href = PAYMENT_LINK;
+ })
+ .catch(err=>{
+  console.error(err);
+  alert("Something went wrong. Check console.");
  });
 }
 
 function loadBooking(){
- const code=loadCode.value;
- db.collection("bookings").doc(code).get().then(doc=>{
+ const code = loadCode.value;
+ db.collection("bookings").doc(code).get()
+ .then(doc=>{
   if(!doc.exists) return alert("Booking not found");
-  slip=doc.data().predictions;
+  slip = doc.data().predictions;
   renderSlip();
  });
 }
 </script>
 
 </body>
-   </html>
+  </html>
